@@ -3,6 +3,7 @@ import React from "react";
 import Cloudy from "../assets/windy.gif";
 import Sunny from "../assets/sunny_alt.gif";
 import Rainy from "../assets/rainy.gif";
+import Drizzle from "../assets/drizzle.gif";
 import { useState, useEffect, useRef } from "react";
 import { fetchWeatherData } from "../functions/index";
 const capitalize = (s) => {
@@ -11,23 +12,32 @@ const capitalize = (s) => {
 };
 
 const getWeatherIcon = (name) => {
+  console.log(name);
+
   switch (name) {
     case "Clouds":
-      return "Cloudy";
+      return Cloudy;
       break;
-    case y:
-      // code block
+    case "Clear":
+      return Sunny;
+      break;
+    case "Rain":
+      return Rainy;
+      break;
+    case "Drizzle":
+      return Drizzle;
       break;
     default:
+      return Sunny;
     // code block
   }
 };
 
 export default function Home() {
-  const [location, setLocation] = useState("london");
+  const [location, setLocation] = useState("Split");
   const [weatherData, setWeatherData] = useState();
   const [isLoading, setIsLoading] = useState(true);
-  const [disabledState, setDisabledState] = useState(false);
+  const [disabledState, setDisabledState] = useState(true);
   const [weatherIcon, setWeatherIcon] = useState("sunny");
   const inputRef = useRef();
   useEffect(() => {
@@ -48,6 +58,12 @@ export default function Home() {
           onChange={(e) => {
             e.target.value.length > 0 ? setDisabledState(false) : setDisabledState(true);
           }}
+          onKeyPress={(event) => {
+            if (event.key === "Enter" && inputRef.current.value !== "") {
+              setLocation(inputRef.current.value);
+              inputRef.current.value = "";
+            }
+          }}
         />
         <Button
           colorScheme="teal"
@@ -57,6 +73,7 @@ export default function Home() {
           disabled={disabledState}
           onClick={() => {
             setLocation(inputRef.current.value);
+            inputRef.current.value = "";
           }}
         >
           Submit
@@ -72,7 +89,7 @@ export default function Home() {
           <SimpleGrid my={4} columns={2} spacing={10} width="100%">
             <Flex direction="column" justify="center" align="flex-start">
               <Flex direction="column" justify="center" align="center">
-                <Image width="200px" objectFit="cover" src={Sunny} />
+                <Image width="200px" objectFit="cover" src={getWeatherIcon(weatherData.weather[0].main)} />
                 <Heading as="h3" size="lg" p={0} m={0}>
                   {Math.round(weatherData.main.temp) + "°C"}
                 </Heading>
